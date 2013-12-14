@@ -1,8 +1,14 @@
 # CouchRest Model Change History
 
-## 2.0.1 - pending
+## 2.0.2 - pending
+
+  * Fix for model_type_value, not being used correctly from database.
+
+## 2.0.1 - 2013-12-03
 
   * nil keys in view requests are now sent to server, avoiding returning first document issue. (Thanks to @svoboda-jan for pointer.)
+  * lazy create database if using `use_database`
+  * added .model_type_value to persistence layer, so that model name can be overwrriten if required (issue #163)
 
 ## 2.0.0 - 2013-10-04
 

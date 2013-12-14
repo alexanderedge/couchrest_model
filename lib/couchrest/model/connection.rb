@@ -11,14 +11,19 @@ module CouchRest
 
         # Overwrite the normal use_database method so that a database
         # name can be provided instead of a full connection.
+        # The actual database will be validated when it is requested for use.
+        # Note that this should not be used with proxied models!
         def use_database(db)
-          @database = prepare_database(db)
+          @_use_database = db
         end
 
         # Overwrite the default database method so that it always
-        # provides something from the configuration
+        # provides something from the configuration.
+        # It will try to inherit the database from an ancester
+        # unless the use_database method has been used, in which
+        # case a new connection will be started.
         def database
-          super || (@database ||= prepare_database)
+          @database ||= prepare_database(super)
         end
 
         def server
@@ -26,7 +31,8 @@ module CouchRest
         end
 
         def prepare_database(db = nil)
-          unless db.is_a?(CouchRest::Database)
+          db = @_use_database unless @_use_database.nil?
+          if db.nil? || db.is_a?(String) || db.is_a?(Symbol)
             conf = connection_configuration
             db = [conf[:prefix], db.to_s, conf[:suffix]].reject{|s| s.to_s.empty?}.join(conf[:join])
             self.server.database!(db)

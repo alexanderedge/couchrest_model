@@ -120,7 +120,7 @@ module CouchRest
         #
         def build_from_database(doc = {}, options = {}, &block)
           src = doc[model_type_key]
-          base = (src.blank? || src == self.to_s) ? self : src.constantize
+          base = (src.blank? || src == model_type_value) ? self : src.constantize
           base.new(doc, options.merge(:directly_set_attributes => true), &block)
         end
 
@@ -164,6 +164,13 @@ module CouchRest
               self['_id'] ||= uniqid
             end
           end
+        end
+
+        # The value to use for this model's model_type_key.
+        # By default, this shouls always be the string representation of the class,
+        # but if you need anything special, overwrite this method.
+        def model_type_value
+          to_s
         end
 
         # Raise an error if validation failed.
